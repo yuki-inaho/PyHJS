@@ -1,0 +1,4 @@
+cmake
+numpy
+opencv-python
+matplotlib
