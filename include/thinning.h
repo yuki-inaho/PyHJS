@@ -1,6 +1,8 @@
 #ifndef PYHJS_INCLUDE_HOMOTOPY_THINNING_H_
 #define PYHJS_INCLUDE_HOMOTOPY_THINNING_H_
 
+// TODO: replace map based searching status management -> cv::mat based
+
 #include <opencv2/opencv.hpp>
 #include <map>
 #include <chrono>
