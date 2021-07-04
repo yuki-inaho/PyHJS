@@ -10,7 +10,6 @@
 
 enum struct PointStatus;
 typedef std::pair<int32_t, int32_t> PointPosition;
-typedef std::map<PointPosition, PointStatus> MapPosition2Status;
 
 enum struct PointStatus
 {
@@ -62,21 +61,16 @@ public:
     void compute()
     {
         std::priority_queue<FluxPoint> priority_queue_flux_points;
-        m_map_position2status_.clear();
+        m_mat_position2status_ = cv::Mat::zeros(cv::Size(m_image_width_, m_image_height_), CV_16SC1);
         for (int32_t y = 0; y < m_image_height_; y++)
         {
             for (int32_t x = 0; x < m_image_width_; x++)
             {
                 // TODO: change skeleton condition
-                if (m_skeleton_mat_.at<float>(y, x) == 0)
-                {
-                    PointPosition pos{x, y};
-                    m_map_position2status_.insert({pos, PointStatus::kSkeletonCandidate});
-                }
-                else
-                {
-                    PointPosition pos{x, y};
-                    m_map_position2status_.insert({pos, PointStatus::kRemoved});
+                if (m_skeleton_mat_.at<float>(y, x) == 0){
+                    m_mat_position2status_.at<short>(y, x) = static_cast<short>(PointStatus::kSkeletonCandidate);
+                }else{
+                    m_mat_position2status_.at<short>(y, x) = static_cast<short>(PointStatus::kRemoved);
                 }
             }
         }
@@ -90,7 +84,7 @@ public:
                 continue;
             if (is_simple(cp_x, cp_y))
             {
-                m_map_position2status_[{cp_x, cp_y}] = PointStatus::kSkeletonCandidate;
+                m_mat_position2status_.at<short>(cp_y, cp_x) = static_cast<short>(PointStatus::kSkeletonCandidate);
                 priority_queue_flux_points.push(FluxPoint(cp_x, cp_y, m_flux_mat_.at<float>(cp_y, cp_x)));
             }
         }
@@ -101,24 +95,24 @@ public:
             FluxPoint flux_point = priority_queue_flux_points.top().clone();
             priority_queue_flux_points.pop();
 
-            m_map_position2status_[{flux_point.x, flux_point.y}] = PointStatus::kSkeletonCandidate;
+            m_mat_position2status_.at<short>(flux_point.y, flux_point.x) = static_cast<short>(PointStatus::kSkeletonCandidate);
             if (!is_simple(flux_point.x, flux_point.y))
                 continue;
 
             if (!is_end_point(flux_point.x, flux_point.y) || flux_point.flux > m_flux_threshold_)
             {
-                m_map_position2status_[{flux_point.x, flux_point.y}] = PointStatus::kRemoved;
+                m_mat_position2status_.at<short>(flux_point.y, flux_point.x) = static_cast<short>(PointStatus::kRemoved);
                 for (int32_t ky = -1; ky <= 1; ky++)
                 {
                     for (int32_t kx = -1; kx <= 1; kx++)
                     {
-                        if (m_map_position2status_[{flux_point.x + kx, flux_point.y + ky}] == PointStatus::kSkeletonCandidate)
+                        if (m_mat_position2status_.at<short>(flux_point.y + ky, flux_point.x + kx) == static_cast<short>(PointStatus::kSkeletonCandidate))
                         {
                             if (is_image_boundary(flux_point.x + kx, flux_point.y + ky))
                                 continue;
                             if (is_simple(flux_point.x + kx, flux_point.y + ky))
                             {
-                                m_map_position2status_[{flux_point.x + kx, flux_point.y + ky}] = PointStatus::kSearching;
+                                m_mat_position2status_.at<short>(flux_point.y + ky, flux_point.x + kx) = static_cast<short>(PointStatus::kSearching);
                                 priority_queue_flux_points.push(
                                     FluxPoint(
                                         flux_point.x + kx,
@@ -131,20 +125,17 @@ public:
             }
             else
             {
-                m_map_position2status_[{flux_point.x, flux_point.y}] = PointStatus::kSkeletonCandidate;
+                m_mat_position2status_.at<short>(flux_point.y, flux_point.x) = static_cast<short>(PointStatus::kSkeletonCandidate);
             }
         }
 
         m_skeleton_point_list_.clear();
-        for (auto kv : m_map_position2status_)
+        for (int32_t y = 0; y < m_image_height_; y++)
         {
-            PointPosition pos = kv.first;
-            PointStatus status = kv.second;
-            if (status == PointStatus::kSkeletonCandidate)
+            for (int32_t x = 0; x < m_image_width_; x++)
             {
-                int32_t p_x = pos.first;
-                int32_t p_y = pos.second;
-                m_skeleton_point_list_.push_back(SkeletonPoint(p_x, p_y, m_distance_mat_.at<float>(p_y, p_x)));
+                if (m_mat_position2status_.at<short>(y, x) == static_cast<short>(PointStatus::kSkeletonCandidate))
+                    m_skeleton_point_list_.push_back(SkeletonPoint(x, y, m_distance_mat_.at<float>(y, x)));
             }
         }
     };
@@ -188,7 +179,7 @@ private:
         return -1;
     }
 
-    bool is_simple(const int32_t& p_x, const int32_t& p_y)
+    bool is_simple(const int32_t &p_x, const int32_t &p_y)
     {
         if (is_image_boundary(p_x, p_y))
             return true;
@@ -200,7 +191,7 @@ private:
             {
                 if (kx == 0 && ky == 0)
                     continue;
-                if (m_map_position2status_[{p_x + kx, p_y + ky}] != PointStatus::kRemoved)
+                if (m_mat_position2status_.at<short>(p_y + ky, p_x + kx) != static_cast<short>(PointStatus::kRemoved))
                     neighbor_vertice_list.insert(neighbor_indices_to_hash(kx, ky));
             }
         }
@@ -240,7 +231,7 @@ private:
         return (num_vertices - num_edges == 1);
     }
 
-    bool is_end_point(const int32_t& p_x, const int32_t& p_y)
+    bool is_end_point(const int32_t &p_x, const int32_t &p_y)
     {
         std::vector<int32_t> neighbor_vertice_list;
         for (int32_t ky = -1; ky <= 1; ky++)
@@ -249,8 +240,7 @@ private:
             {
                 if (kx == 0 && ky == 0)
                     continue;
-                if (m_map_position2status_[{p_x + kx, p_y + ky}] != PointStatus::kRemoved)
-                
+                if (m_mat_position2status_.at<short>(p_y + ky, p_x + kx) != static_cast<short>(PointStatus::kRemoved))
                     neighbor_vertice_list.push_back(neighbor_indices_to_hash(kx, ky));
             }
         }
@@ -282,7 +272,7 @@ private:
     cv::Mat m_label_mat_;
     std::vector<cv::Point2i> m_contour_points_;
     std::vector<SkeletonPoint> m_skeleton_point_list_;
-    MapPosition2Status m_map_position2status_;
+    cv::Mat m_mat_position2status_;
 };
 
 #endif
