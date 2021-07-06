@@ -35,6 +35,9 @@ class Skeletonizer(object):
         skeleton = self._hjs.get_skeleton_image()
         return skeleton
 
+    def set_parameters(self, gamma, epsilon):
+        self._hjs.set_parameters(gamma, epsilon)
+
     def get_flux_image(self):
         return self._hjs.get_flux_image()
 
