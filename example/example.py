@@ -26,9 +26,7 @@ def closing(image, kernel_size=5):
 
 
 class Skeletonizer(object):
-    def __init__(self):
-        gamma = 2.5
-        epsilon = 1.0
+    def __init__(self, gamma, epsilon):
         self._hjs = PyHJS(gamma, epsilon)
 
     def compute(self, label_mask):
@@ -64,7 +62,6 @@ def pruning_skeleton_mask(skeleton_image: np.ndarray, contour_mask: np.ndarray, 
     # - end points
     # - junction points
     # - bridge area
-
     _, img_bridge, _ = get_separate_skeleton_mask(skeleton_image)
 
     # Calculate connnected component algorithm against bridge_image
@@ -91,6 +88,7 @@ def get_binary_image_contour(binary_image: np.ndarray) -> np.ndarray:
         contour_mask[contour[:, 0, 1], contour[:, 0, 0]] = 255
     return contour_mask
 
+
 # load mask image and resize
 image = cv2.imread(f"{SCRIPT_DIR}/example/mask.png", cv2.IMREAD_ANYDEPTH)
 image = cv2.resize(image, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_NEAREST)
@@ -99,7 +97,7 @@ print(image.shape)
 label_mask = np.zeros_like(image)
 label_mask[image > 0] = 255
 
-skeletonizer = Skeletonizer()
+skeletonizer = Skeletonizer(gamma=2.5, epsilon=1.5)
 start = time.time()
 skeleton = skeletonizer.compute(label_mask)
 end = time.time()
@@ -111,11 +109,21 @@ skeleton_img[skeleton_img_raw > 0] = 1
 flux_img = skeletonizer.get_flux_image()
 df_img = skeletonizer.get_distance_transform_image()
 
+### Redundant skeleton removal
 start = time.time()
 contour_mask = get_binary_image_contour(label_mask)
-skeleton_img = pruning_skeleton_mask(skeleton_img, contour_mask)
+skeleton_img = pruning_skeleton_mask(skeleton_img, contour_mask, edge_redundant_threshold=30)
 end = time.time()
 print(end - start)
 
 plt.imshow(skeleton_img)
 plt.show()
+
+### save figures
+"""
+plt.imshow(label_mask)
+plt.savefig("example/input.png")
+plt.imshow(skeleton_img)
+plt.savefig("example/result.png")
+cv2.imwrite("example/result_binary.png", (skeleton_img * 255).astype(np.uint8))
+"""

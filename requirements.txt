@@ -2,3 +2,4 @@ cmake
 numpy
 opencv-python
 matplotlib
+cvui
