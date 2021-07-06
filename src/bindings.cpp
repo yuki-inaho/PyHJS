@@ -19,6 +19,7 @@ PYBIND11_MODULE(pyhjs, m)
             py::arg("gamma") = 2.5,
             py::arg("epsilon") = 1.0)
         .def("compute", &HamiltonJacobiSkeleton::compute)
+        .def("set_parameters", &HamiltonJacobiSkeleton::setParameters)
         .def("get_skeleton_image", &HamiltonJacobiSkeleton::getSkeletonImage)
         .def("get_distance_transform_image", &HamiltonJacobiSkeleton::getDistanceTransformImage)
         .def("get_flux_image", &HamiltonJacobiSkeleton::getFluxImage);

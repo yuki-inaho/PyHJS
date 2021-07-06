@@ -55,6 +55,12 @@ public:
         flux_image_ = F_mat;
     }
 
+    void setParameters(const float &gamma, const float &epsilon)
+    {
+        gamma_ = gamma;
+        epsilon_ = epsilon;
+    }
+
     cv::Mat getSkeletonImage()
     {
         return skeleton_image_.clone();

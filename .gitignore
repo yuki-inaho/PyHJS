@@ -8,3 +8,6 @@ edge_aware_surface_normal_calculator.egg-info/
 pyproject.toml
 example/__pycache__/
 pyhjs.cpython-37m-x86_64-linux-gnu.so
+input.png
+mask.png
+result.png
