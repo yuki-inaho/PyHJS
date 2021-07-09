@@ -6,5 +6,6 @@
 
 void flux(const cv::Mat &Dx, const cv::Mat &Dy, cv::Mat &F);
 std::vector<cv::Point> getContourPoints(const cv::Mat &mask_image);
+cv::Mat getContourMask(const cv::Mat &mask_image);
 
 #endif

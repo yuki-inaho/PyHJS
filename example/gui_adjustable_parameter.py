@@ -19,8 +19,8 @@ def fill_boundary_zero(image, bold=1):
 
 
 class Skeletonizer(object):
-    def __init__(self, gamma, epsilon):
-        self._hjs = PyHJS(gamma, epsilon)
+    def __init__(self, gamma, epsilon, arc_angle_threshold=0):
+        self._hjs = PyHJS(gamma, epsilon, arc_angle_threshold)
 
     def compute(self, input_mask):
         frame = BinaryFrame(input_mask)
@@ -28,8 +28,8 @@ class Skeletonizer(object):
         skeleton = self._hjs.get_skeleton_image()
         return skeleton
 
-    def set_parameters(self, gamma, epsilon):
-        self._hjs.set_parameters(gamma, epsilon)
+    def set_parameters(self, gamma, epsilon, arc_angle_threshold=0):
+        self._hjs.set_parameters(gamma, epsilon, arc_angle_threshold)
 
     def get_flux_image(self):
         return self._hjs.get_flux_image()
@@ -48,14 +48,15 @@ def main():
     ### Initialize skeletonizer
     gamma = [2.5]
     epsilon = [1.5]
-    skeletonizer = Skeletonizer(gamma=gamma[0], epsilon=epsilon[0])
+    angle_thresh = [0]
+    skeletonizer = Skeletonizer(gamma=gamma[0], epsilon=epsilon[0], arc_angle_threshold=angle_thresh[0])
 
     ### Initialize visualizer
     scale = 2.0
     image_viz_width = int(input_mask.shape[1] * scale)
     image_viz_height = int(input_mask.shape[0] * scale)
     frame_width = np.max([image_viz_width, 200])
-    frame_height = image_viz_height + 200
+    frame_height = image_viz_height + 400
     frame = np.zeros((frame_height, frame_width, 3), np.uint8)
 
     WINDOW_NAME = "Skeletonization"
@@ -70,7 +71,10 @@ def main():
         cvui.text(frame, 10, image_viz_height + 110, "epsilon, (default: 1.0)")
         cvui.trackbar(frame, 10, image_viz_height + 140, 180, epsilon, 0.1, 5.0)
 
-        skeletonizer.set_parameters(gamma[0], epsilon[0])
+        cvui.text(frame, 10, image_viz_height + 110, "angle_threshold, (default: 0.0)")
+        cvui.trackbar(frame, 10, image_viz_height + 240, 180, angle_thresh, 0.0, 180.0)
+
+        skeletonizer.set_parameters(gamma[0], epsilon[0], angle_thresh[0])
         skeleton_img = skeletonizer.compute(input_mask)
         skeleton_img = fill_boundary_zero(skeleton_img)
         skeleton_viz_img = (skeleton_img * 255).astype(np.uint8)

@@ -15,9 +15,10 @@ PYBIND11_MODULE(pyhjs, m)
             py::arg("binary_image"));
     py::class_<HamiltonJacobiSkeleton>(m, "PyHJS")
         .def(
-            py::init<float, float>(),
+            py::init<float, float, float>(),
             py::arg("gamma") = 2.5,
-            py::arg("epsilon") = 1.0)
+            py::arg("epsilon") = 1.0,
+            py::arg("threshold_arc_angle_inscribed_circle") = 0)
         .def("compute", &HamiltonJacobiSkeleton::compute)
         .def("set_parameters", &HamiltonJacobiSkeleton::setParameters)
         .def("get_skeleton_image", &HamiltonJacobiSkeleton::getSkeletonImage)

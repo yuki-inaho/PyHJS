@@ -2,16 +2,18 @@
 #define PYHJS_INCLUDE_HJS_H_
 
 #include <iostream>
+#include <chrono>
 #include <opencv2/opencv.hpp>
 #include "frame.h"
 #include "skeleton.h"
 #include "thinning.h"
-#include <chrono>
+#include "pruning.h"
+
 
 class HamiltonJacobiSkeleton
 {
 public:
-    HamiltonJacobiSkeleton(float gamma, float epsilon) : gamma_(gamma), epsilon_(epsilon){};
+    HamiltonJacobiSkeleton(float gamma, float epsilon, float threshold_arc_angle_inscribed_circle = 0) : gamma_(gamma), epsilon_(epsilon), threshold_arc_angle_inscribed_circle_(threshold_arc_angle_inscribed_circle){};
     ~HamiltonJacobiSkeleton(){};
 
     void compute(const BinaryFrame &frame)
@@ -51,14 +53,27 @@ public:
 
         /// store results
         skeleton_image_ = thinning.getSkeletonImage();
+        cv::Mat contour_mask = getContourMask(frame.cvmat);
+        PruningSkeleton pruning = PruningSkeleton(threshold_arc_angle_inscribed_circle_);
+        pruning.setImages(skeleton_image_, D_mat, contour_mask);
+        pruning.setInscribedCircles();
+        skeleton_image_ = pruning.getPrunedSkeleton();
+
+        //if(threshold_arc_angle_inscribed_circle_ > 0){
+        //}
+
         distance_transform_image_ = D_mat;
         flux_image_ = F_mat;
     }
 
-    void setParameters(const float &gamma, const float &epsilon)
+    void setParameters(const float &gamma, const float &epsilon, float threshold_arc_angle_inscribed_circle = 0)
     {
         gamma_ = gamma;
         epsilon_ = epsilon;
+        std::cout << threshold_arc_angle_inscribed_circle_  << std::endl;
+        if(threshold_arc_angle_inscribed_circle > 0){
+            threshold_arc_angle_inscribed_circle_ = threshold_arc_angle_inscribed_circle;
+        }
     }
 
     cv::Mat getSkeletonImage()
@@ -81,6 +96,7 @@ private:
     cv::Mat flux_image_;
     cv::Mat skeleton_image_;
 
+    float threshold_arc_angle_inscribed_circle_;
     float gamma_, epsilon_;
 };
 
