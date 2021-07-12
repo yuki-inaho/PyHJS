@@ -70,7 +70,6 @@ public:
     {
         gamma_ = gamma;
         epsilon_ = epsilon;
-        std::cout << threshold_arc_angle_inscribed_circle_  << std::endl;
         if(threshold_arc_angle_inscribed_circle > 0){
             threshold_arc_angle_inscribed_circle_ = threshold_arc_angle_inscribed_circle;
         }
