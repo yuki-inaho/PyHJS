@@ -1,23 +1,22 @@
 #ifndef PYHJS_INCLUDE_HJS_H_
 #define PYHJS_INCLUDE_HJS_H_
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <opencv2/opencv.hpp>
+
 #include "frame.h"
+#include "pruning.h"
 #include "skeleton.h"
 #include "thinning.h"
-#include "pruning.h"
 
-
-class HamiltonJacobiSkeleton
-{
-public:
-    HamiltonJacobiSkeleton(float gamma, float epsilon, float threshold_arc_angle_inscribed_circle = 0) : gamma_(gamma), epsilon_(epsilon), threshold_arc_angle_inscribed_circle_(threshold_arc_angle_inscribed_circle){};
+class HamiltonJacobiSkeleton {
+   public:
+    HamiltonJacobiSkeleton(float gamma, float epsilon, float threshold_arc_angle_inscribed_circle = 0)
+        : gamma_(gamma), epsilon_(epsilon), threshold_arc_angle_inscribed_circle_(threshold_arc_angle_inscribed_circle){};
     ~HamiltonJacobiSkeleton(){};
 
-    void compute(const BinaryFrame &frame)
-    {
+    void compute(const BinaryFrame &frame) {
         /// normalize and copy the images
         /// Rewrite
         double min_frame_value, max_frame_value;
@@ -59,38 +58,28 @@ public:
         pruning.setInscribedCircles();
         skeleton_image_ = pruning.getPrunedSkeleton();
 
-        //if(threshold_arc_angle_inscribed_circle_ > 0){
+        // if(threshold_arc_angle_inscribed_circle_ > 0){
         //}
 
         distance_transform_image_ = D_mat;
         flux_image_ = F_mat;
     }
 
-    void setParameters(const float &gamma, const float &epsilon, float threshold_arc_angle_inscribed_circle = 0)
-    {
+    void setParameters(const float &gamma, const float &epsilon, float threshold_arc_angle_inscribed_circle = 0) {
         gamma_ = gamma;
         epsilon_ = epsilon;
-        if(threshold_arc_angle_inscribed_circle > 0){
+        if (threshold_arc_angle_inscribed_circle > 0) {
             threshold_arc_angle_inscribed_circle_ = threshold_arc_angle_inscribed_circle;
         }
     }
 
-    cv::Mat getSkeletonImage()
-    {
-        return skeleton_image_.clone();
-    }
+    cv::Mat getSkeletonImage() { return skeleton_image_.clone(); }
 
-    cv::Mat getDistanceTransformImage()
-    {
-        return distance_transform_image_.clone();
-    }
+    cv::Mat getDistanceTransformImage() { return distance_transform_image_.clone(); }
 
-    cv::Mat getFluxImage()
-    {
-        return flux_image_.clone();
-    }
+    cv::Mat getFluxImage() { return flux_image_.clone(); }
 
-private:
+   private:
     cv::Mat distance_transform_image_;
     cv::Mat flux_image_;
     cv::Mat skeleton_image_;

@@ -150,7 +150,6 @@ class PruningSkeleton {
             }
         }
 
-        std::cout << m_threshold_angle_inscribed_arc_ << std::endl;
         for (auto it_inscribed_circle = m_inscribed_circles_.begin(); it_inscribed_circle != m_inscribed_circles_.end(); ++it_inscribed_circle) {
             it_inscribed_circle->searchTouchingPoints(m_contour_mask_);
             if(it_inscribed_circle->arc_angle_inscribed_points() >= m_threshold_angle_inscribed_arc_)
