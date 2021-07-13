@@ -58,9 +58,6 @@ class HamiltonJacobiSkeleton {
         pruning.setInscribedCircles();
         skeleton_image_ = pruning.getPrunedSkeleton();
 
-        // if(threshold_arc_angle_inscribed_circle_ > 0){
-        //}
-
         distance_transform_image_ = D_mat;
         flux_image_ = F_mat;
     }
