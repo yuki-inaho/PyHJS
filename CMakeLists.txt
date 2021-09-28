@@ -32,7 +32,8 @@ include_directories(
 pybind11_add_module(
     ${PROJ_NAME}
     ${PYTHON_INCLUDE_DIRS}
-    src/skeleton.cpp 
+    src/skeleton.cpp
+    src/anisotropic_diffusion.cpp
     src/bindings.cpp 
     src/ndarray_converter.cpp
 )
