@@ -31,7 +31,7 @@ class Skeletonizer(object):
 
     def compute(self, label_mask):
         frame = BinaryFrame(label_mask)
-        self._hjs.compute(frame)
+        self._hjs.compute(frame, enable_anisotropic_diffusion=True)
         skeleton = self._hjs.get_skeleton_image()
         return skeleton
 
