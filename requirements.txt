@@ -1,5 +1,5 @@
 cmake
 numpy
 opencv-python
-matplotlib
+matplotlib==3.3.4
 cvui

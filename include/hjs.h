@@ -26,11 +26,11 @@ public:
         cv::minMaxLoc(L_mat, &min_frame_value, &max_frame_value);
         cv::normalize(L_mat, L_mat, 1, 0, cv::NORM_MINMAX);
         cv::Mat L_mat_raw = L_mat.clone();
-        cv::threshold(L_mat, L_mat, 0.5, 1.0, CV_THRESH_BINARY_INV);
+        cv::threshold(L_mat, L_mat, 0.5, 1.0, cv::THRESH_BINARY_INV);
 
         /* compute the distance function inside the silhouette */
         cv::Mat D_mat;
-        cv::distanceTransform(frame.cvmat, D_mat, CV_DIST_L2, 3);
+        cv::distanceTransform(frame.cvmat, D_mat, cv::DIST_L2, 3);
         std::vector<cv::Point> contour_points = getContourPoints(frame.cvmat);
 
         cv::Mat F_mat;
