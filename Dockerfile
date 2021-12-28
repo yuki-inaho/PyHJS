@@ -11,6 +11,7 @@ RUN pip install --upgrade setuptools
 RUN pip install cmake
 RUN pip install numpy==1.16.6
 RUN pip install cython==0.29.20 --ignore-installed
+RUN pip install matplotlib==3.3.4
 
 RUN ln -sf /usr/lib/x86_64-linux-gnu/pkgconfig/opencv4.pc /usr/lib/x86_64-linux-gnu/pkgconfig/opencv.pc
 ENV PKG_CONFIG_PATH=/usr/share/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:$PKG_CONFIG_PATH
