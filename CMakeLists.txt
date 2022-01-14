@@ -43,7 +43,7 @@ pybind11_add_module(
   src/ndarray_converter.cpp)
 
 pkg_check_modules(OpenCV REQUIRED opencv)
-include_directories(${OpenCV_CFLAGS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJ_NAME} ${OpenCV_LDFLAGS})
 
 target_link_libraries(${PROJ_NAME} ${PYTHON_LIBRARIES})
