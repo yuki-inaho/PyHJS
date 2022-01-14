@@ -31,17 +31,13 @@ void firstDerivativeOmp(const cv::Mat &image, cv::Mat &image_dx, cv::Mat &image_
 
     image_dx = cv::Mat::zeros(image.size(), CV_32FC1);
     image_dy = cv::Mat::zeros(image.size(), CV_32FC1);
-    cv::parallel_for_(cv::Range(0, width * height), [&](const cv::Range &range)
+    parallel_for_omp(cv::Range(0, width * height), [&](const cv::Range &range)
                       {
                           for (int r = range.start; r < range.end; r++)
                           {
                               int y = r / width;
                               int x = r % width;
                               float dx, dy;
-                              /*
-                            if (image.at<float>(y, x) == 0)
-                                continue;
-                            */
                               opFirstDerivative(image, x, y, width, height, dx, dy);
                               image_dx.at<float>(y, x) = dx;
                               image_dy.at<float>(y, x) = dy;
@@ -90,7 +86,7 @@ void secondDerivativeOmp(const cv::Mat &image, cv::Mat &image_dxx, cv::Mat &imag
     image_dxx = cv::Mat::zeros(image.size(), CV_32FC1);
     image_dxy = cv::Mat::zeros(image.size(), CV_32FC1);
     image_dyy = cv::Mat::zeros(image.size(), CV_32FC1);
-    cv::parallel_for_(cv::Range(0, width * height), [&](const cv::Range &range)
+    parallel_for_omp(cv::Range(0, width * height), [&](const cv::Range &range)
                       {
                           for (int r = range.start; r < range.end; r++)
                           {
@@ -114,7 +110,7 @@ cv::Mat derivative_d2I_d2xi(const cv::Mat &image, const cv::Mat &image_x, const 
     cv::Mat image_dxixi = cv::Mat::zeros(image_x.size(), CV_32FC1);
     int width = image_x.cols;
     int height = image_x.rows;
-    cv::parallel_for_(cv::Range(0, width * height), [&](const cv::Range &range)
+    parallel_for_omp(cv::Range(0, width * height), [&](const cv::Range &range)
                       {
                           for (int r = range.start; r < range.end; r++)
                           {
@@ -149,7 +145,7 @@ cv::Mat derivative_d2I_d2eta(const cv::Mat &image, const cv::Mat &image_x, const
     int width = image_x.cols;
     int height = image_x.rows;
 
-    cv::parallel_for_(cv::Range(0, width * height), [&](const cv::Range &range)
+    parallel_for_omp(cv::Range(0, width * height), [&](const cv::Range &range)
                       {
                           for (int r = range.start; r < range.end; r++)
                           {
@@ -184,7 +180,7 @@ cv::Mat update(cv::Mat &image_ad, const cv::Mat &image_d2xi, const cv::Mat &imag
     int height = image_ad.rows;
     cv::Mat image_ad_new = cv::Mat::zeros(cv::Size(width, height), CV_32FC1);
 
-    cv::parallel_for_(cv::Range(0, width * height), [&](const cv::Range &range)
+    parallel_for_omp(cv::Range(0, width * height), [&](const cv::Range &range)
                       {
                           for (int r = range.start; r < range.end; r++)
                           {

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include "parallel_for_wrapper.h"
 
 void opFirstDerivative(const cv::Mat &image, int x, int y, int width, int height, float &dx, float &dy);
 void firstDerivativeOmp(const cv::Mat &image, cv::Mat &image_dx, cv::Mat &image_dy);
