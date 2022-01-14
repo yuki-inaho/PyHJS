@@ -18,7 +18,7 @@ public:
         : gamma_(gamma), epsilon_(epsilon), threshold_arc_angle_inscribed_circle_(threshold_arc_angle_inscribed_circle){};
     ~HamiltonJacobiSkeleton(){};
 
-    void compute(const BinaryFrame &frame, bool enable_anisotropic_diffusion = true)
+    void compute(const BinaryFrame &frame, bool enable_anisotropic_diffusion = false)
     {
         /* normalize and copy the images */
         double min_frame_value, max_frame_value;
