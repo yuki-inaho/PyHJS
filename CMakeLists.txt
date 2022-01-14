@@ -16,14 +16,6 @@ if(OPENMP_FOUND)
   message("OPENMP IS ENABLED")
 endif()
 
-<<<<<<< HEAD
-find_package(PythonLibs 3 REQUIRED)
-find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
-MESSAGE("PYTHON_INCLUDE_DIRS : " ${PYTHON_INCLUDE_DIRS})
-MESSAGE("PYTHON_LIBRARIES : " ${PYTHON_LIBRARIES})
-add_subdirectory(extern/pybind11)
-=======
->>>>>>> 58ba983... Reduce dependency of python interpreter version on CMakelists.txt
 
 if(DEFINED PYTHON_INTERPRETER_VERSION_CALLING_SETUP_SCRIPT)
   set(PYTHON_INTERPRETER_VERSION ${PYTHON_INTERPRETER_VERSION_CALLING_SETUP_SCRIPT})
